@@ -12,12 +12,12 @@ def score_letters_by_count(words):
         d[letter] = 1
   return d
 
-
 def score_word(score_val, word):
-  score = 0
-  for letter in word:
-    score += score_val[letter]
-  return score
+  return reduce(
+    lambda score, letter: score + score_val[letter], 
+    word,
+    0
+  )  
 
 def make_guess(words):
   d = score_letters_by_count(words)
