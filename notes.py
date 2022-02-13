@@ -1,4 +1,4 @@
-from functools import reduce
+from functools import partial, reduce
 
 WORDS = ["apple", "bands", "carat", "doggo", "eaten", "foxes", "goats", "hoppy", "kites", "lamer"]
 
@@ -19,15 +19,23 @@ def score_word(score_val, word):
     0
   )  
 
+
+def cb(map, tup, word):
+  top_word, top_score = tup
+  new_score = score_word(map, word)
+  if new_score > top_score:
+    return (word, new_score)
+  return (top_word, top_score)
+
 def make_guess(words):
   d = score_letters_by_count(words)
-  top_word = None
-  top_score = 0
-  for word in words:
-    new_score = score_word(d, word) 
-    if  new_score > top_score:
-      top_word = word
-      top_score = new_score
+
+  (top_word, top_score) = reduce(
+    partial(cb, d),
+    words,
+    (None, 0)
+  )
   print(f"top_score: {top_score}, top_word: {top_word}")
 
-make_guess(WORDS)
+
+make_guess(WORDS) #top_score: 25, top_word: eaten
