@@ -1,41 +1,26 @@
 from functools import partial, reduce
+from collections import Counter
+
+def sortDictByVal(d):
+  return sorted(d, key = lambda k: d[k], reverse=True)
 
 WORDS = ["apple", "bands", "carat", "doggo", "eaten", "foxes", "goats", "hoppy", "kites", "lamer"]
 
-def score_letters_by_count(words):
-  d = {}
-  for word in words:
-    for letter in word:
-      if letter in d.keys():
-        d[letter] += 1
-      else:
-        d[letter] = 1
-  return d
+LETTER_SCORE_MAP = Counter(''.join(WORDS))
+print(f"LETTER_SCORE_MAP: {LETTER_SCORE_MAP}")
 
-def score_word(score_val, word):
+def make_word_score_map(words):
   return reduce(
-    lambda score, letter: score + score_val[letter], 
-    word,
-    0
-  )  
-
-
-def cb(map, tup, word):
-  top_word, top_score = tup
-  new_score = score_word(map, word)
-  if new_score > top_score:
-    return (word, new_score)
-  return (top_word, top_score)
-
-def make_guess(words):
-  d = score_letters_by_count(words)
-
-  (top_word, top_score) = reduce(
-    partial(cb, d),
+    lambda o, word: {**o, word: sum([LETTER_SCORE_MAP[letter] for letter in set(word)])},
     words,
-    (None, 0)
+    {}
   )
-  print(f"top_score: {top_score}, top_word: {top_word}")
+def make_guess(words):
+  word_score_map = make_word_score_map(words)
+  print(f"word_score_map: {word_score_map}")
+  sorted_words = sortDictByVal(word_score_map)
 
+  print(f"have sorted_words:{sorted_words}")
 
 make_guess(WORDS) #top_score: 25, top_word: eaten
+
